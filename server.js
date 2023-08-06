@@ -17,27 +17,31 @@ const botName = "Chatcord Bot";
 //it's listening for an event, which in this case is connection
 io.on("connection", (socket) => {
   console.log("new web socket connection...");
-  //this will emit the message to main.js
-  //emits to the single client thats connecting
-  //welcome curent user
-  socket.emit("message", formatMessage(botName, "Welcome to ChatCord"));
-  //broadcast when a user connects
-  //this will notify everyone except the user that is connecting
-  socket.broadcast.emit(
-    "message",
-    formatMessage(botName, "Welcome to ChatCord")
-  );
+  socket.on("joinRoom", ({ username, room }) => {
+    //this will emit the message to main.js
+    //emits to the single client thats connecting
+    //welcome current user
+    socket.emit("message", formatMessage(botName, "Welcome to ChatCord"));
+    //broadcast when a user connects
+    //this will notify everyone except the user that is connecting
+    socket.broadcast.emit(
+      "message",
+      formatMessage(botName, "Welcome to ChatCord")
+    );
+  });
+
   //this is to all clients in general
 
-  //runs when a client disconnects
-  socket.on("disconnect", () => {
-    io.emit("message", formatMessage(botName, "Welcome to ChatCord"));
-  });
   //   io.emit();
 
   //listen for chat message
   socket.on("chatMessage", (msg) => {
     io.emit("message", formatMessage("USER", msg));
+  });
+
+  //runs when a client disconnects
+  socket.on("disconnect", () => {
+    io.emit("message", formatMessage(botName, "Welcome to ChatCord"));
   });
 });
 const PORT = 3000 || process.env.PORT;
