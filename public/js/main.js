@@ -2,6 +2,8 @@
 
 const chatForm = document.getElementById("chat-form");
 const chatMessages = document.querySelector(".chat-messages");
+const roomName = document.querySelector("#room-name");
+const userList = document.querySelector("#users");
 
 //get username and room from URL using Qs library
 //ignoreQueryPrefix: true...will leave out the symbols
@@ -12,6 +14,12 @@ const { username, room } = Qs.parse(location.search, {
 const socket = io();
 //join chatroom
 socket.emit("joinRoom", { username, room });
+
+//get room and users
+socket.on("roomUsers", ({ room, users }) => {
+  outputRoomName(room);
+  outputUsers(users);
+});
 
 socket.on("message", (message) => {
   console.log(message);
@@ -40,4 +48,16 @@ const outputMessage = (message) => {
    ${message.text}</p>`;
 
   document.querySelector(".chat-messages").appendChild(div);
+};
+
+//add roomname to DOM
+outputRoomName = () => {
+  roomName.innerText = room;
+};
+
+//add users to DOM
+outputUsers = (users) => {
+  userList.innerHTML = `
+  ${users.map((user) => `<li>${user.username}</li>`).join("")}
+  `;
 };
