@@ -24,7 +24,7 @@ const botName = "Chatcord Bot";
 io.on("connection", (socket) => {
   console.log("new web socket connection...");
   socket.on("joinRoom", ({ username, room }) => {
-    const user = userJoin(socket, id, username, room);
+    const user = userJoin(socket.id, username, room);
     socket.join(user.room);
     //this will emit the message to main.js
     //emits to the single client thats connecting
